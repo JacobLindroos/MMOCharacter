@@ -8,22 +8,52 @@ public class FadeOut : MonoBehaviour
 	private GameObject hitObject;
 	private bool hitGameObject = false;
 
+	Camera mainCamera = null;
+
+	Vector3 CameraHalfExtends
+	{
+		get
+		{
+			Vector3 halfExtends;
+			halfExtends.y = mainCamera.nearClipPlane * Mathf.Tan(0.5f * Mathf.Deg2Rad * mainCamera.fieldOfView);
+			halfExtends.x = halfExtends.y * mainCamera.aspect;
+			halfExtends.z = 0.0f;
+			return halfExtends;
+		}
+	}
+
+	private void Start()
+	{
+		mainCamera = GetComponent<Camera>();
+	}
+
+	private void OnDrawGizmos()
+	{
+		Gizmos.color = Color.red;
+		Gizmos.DrawRay(transform.position, transform.forward * maxRayDistance);
+		Gizmos.DrawWireCube(transform.position, CameraHalfExtends);
+	}
+
 
 	void FixedUpdate()
-    {
+	{
 		Ray ray = new Ray(transform.position, transform.forward);
-        RaycastHit hit;
+		RaycastHit hit;
 
-		Debug.DrawLine(transform.position, transform.position + transform.forward * maxRayDistance, Color.red);
+		//Debug.DrawLine(transform.position, transform.position + transform.forward * maxRayDistance, Color.red);
 
-		if (Physics.Raycast(ray, out hit, maxRayDistance) && hit.collider.gameObject.layer == 9)
+		//Physics.BoxCast(transform.position, CameraHalfExtends, transform.forward, out hit ,transform.rotation, maxRayDistance);
+
+		if (Physics.BoxCast(transform.position, CameraHalfExtends, transform.forward, out hit, transform.rotation, maxRayDistance)
+								&& hit.collider.gameObject.layer == 9)
 		{
 			hitObject = hit.transform.gameObject;
 			print("Looking at " + hit.transform.name);
 
-			if (hit.distance < 0.5f )
+			if (hit.distance < 0.5f)
 			{
 				print("change material of wall object");
+				//hitObject.SetActive(false);
 				hitObject.GetComponent<MeshRenderer>().enabled = false;
 			}
 			if (hit.distance > 0.5f)
@@ -33,7 +63,8 @@ public class FadeOut : MonoBehaviour
 			hitGameObject = true;
 		}
 
-		if (Physics.Raycast(ray, out hit, maxRayDistance) && hit.collider.gameObject.layer != 9)
+		if (Physics.BoxCast(transform.position, CameraHalfExtends, transform.forward, out hit, transform.rotation, maxRayDistance)
+						&& hit.collider.gameObject.layer != 9)
 		{
 			if (hitGameObject)
 			{
@@ -43,9 +74,26 @@ public class FadeOut : MonoBehaviour
 			}
 		}
 
-		//hur återställer jag meshen av senast träffade spelobjekt när jag int längre träffar det spelobjektet
-		// - referens till det senast träffade spelobjektet
-		// - bool som kollar om jag precis har träffat ett spelobjekt
+
+		//if (Physics.Raycast(ray, out hit, maxRayDistance) && hit.collider.gameObject.layer != 9)
+		//{
+		//	if (hitGameObject)
+		//	{
+		//		hitObject.GetComponent<MeshRenderer>().enabled = true;
+
+		//		hitGameObject = false;
+		//	}
+		//}
+
+
+
+		/* 
+		 * 
+		 * få bort clippingen när kameran är i vissa vinklar
+		 * få till fade på materialet för spelobjektet kameran åker in i spelobjektet
+		 * 
+		 * 
+		 */
 
 
 
