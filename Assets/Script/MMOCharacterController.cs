@@ -12,12 +12,12 @@ public class MMOCharacterController : MonoBehaviour
     public float zoomSpeed = 2f;
     public float zoomMin = -2f;
     public float zoomMax = -10f;
-    public float rotationSpeed = 5f;
+	public float mouseYMin = -60f;
+	public float mouseYMax = 60f;
+	public float rotationSpeed = 5f;
 
 	private float zoom;
 	private float mouseX, mouseY;
-    private float mouseYMin = -60f;
-    private float mouseYMax = 60f;
     private float moveFB, moveLR; //move front back and left right
 	private bool isTurning;
 

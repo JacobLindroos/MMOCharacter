@@ -4,34 +4,20 @@ using UnityEngine;
 
 public class CameraCollision : MonoBehaviour
 {
-
-	private float fadeTimer = 0.4f;
-
-	// Start is called before the first frame update
-	void Start()
-    {
-    }
-
     private void OnTriggerEnter(Collider other)
     {
 		Debug.Log("Fade material, Inside object: " + other.transform.name);
-		
-		MeshRenderer wallMesh = other.GetComponent<MeshRenderer>();
-		Color newColor = wallMesh.material.color;
-		wallMesh.material.color = new Color(newColor.r, newColor.g, newColor.b, 0.5f);
+
+		if (other.gameObject.layer == 9)
+		{
+			other.GetComponent<MeshRenderer>().enabled = false;
+		}
 	}
 
     private void OnTriggerExit(Collider other)
     {
 		Debug.Log("Fade out material: " + other.transform.name);
-		MeshRenderer wallMesh = other.GetComponent<MeshRenderer>();
-		Color newColor = wallMesh.material.color;
-		wallMesh.material.color = new Color(newColor.r, newColor.g, newColor.b, 1f);
-	}
 
-	// Update is called once per frame
-	void Update()
-    {
-        
-    }
+		other.GetComponent<MeshRenderer>().enabled = true;
+	}
 }

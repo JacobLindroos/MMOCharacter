@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class FadeOut : MonoBehaviour
 {
-	public float maxRayDistance = 10f;
-	private GameObject hitObject;
-	private bool hitGameObject = false;
 
-	Camera mainCamera = null;
+	public Camera mainCamera;
+	public float maxRayDistance = 10f;
+
+	private bool raycastCollision;
+	private GameObject hitObject;
+
+	List<GameObject> objects = new List<GameObject>();
 
 	Vector3 CameraHalfExtends
 	{
@@ -34,69 +37,33 @@ public class FadeOut : MonoBehaviour
 		Gizmos.DrawWireCube(transform.position, CameraHalfExtends);
 	}
 
-
 	void FixedUpdate()
 	{
-		Ray ray = new Ray(transform.position, transform.forward);
+		//Ray ray = new Ray(transform.position, transform.forward);
 		RaycastHit hit;
-
-		//Debug.DrawLine(transform.position, transform.position + transform.forward * maxRayDistance, Color.red);
-
-		//Physics.BoxCast(transform.position, CameraHalfExtends, transform.forward, out hit ,transform.rotation, maxRayDistance);
 
 		if (Physics.BoxCast(transform.position, CameraHalfExtends, transform.forward, out hit, transform.rotation, maxRayDistance)
 								&& hit.collider.gameObject.layer == 9)
 		{
 			hitObject = hit.transform.gameObject;
+			raycastCollision = true;
+		}
+
+		if(raycastCollision)
+		{
 			print("Looking at " + hit.transform.name);
 
-			if (hit.distance < 0.5f)
-			{
-				print("change material of wall object");
-				//hitObject.SetActive(false);
-				hitObject.GetComponent<MeshRenderer>().enabled = false;
-			}
-			if (hit.distance > 0.5f)
-			{
-				hitObject.GetComponent<MeshRenderer>().enabled = true;
-			}
-			hitGameObject = true;
+			objects.Add(hitObject);
+			MeshRenderer wallMesh = hitObject.GetComponent<MeshRenderer>();
+			Color newColor = wallMesh.material.color;
+			wallMesh.material.color = new Color(newColor.r, newColor.g, newColor.b, 0.5f);
 		}
-
-		if (Physics.BoxCast(transform.position, CameraHalfExtends, transform.forward, out hit, transform.rotation, maxRayDistance)
-						&& hit.collider.gameObject.layer != 9)
+		if(hit.collider.gameObject.layer != 9 && hitObject != null)
 		{
-			if (hitGameObject)
-			{
-				hitObject.GetComponent<MeshRenderer>().enabled = true;
-
-				hitGameObject = false;
-			}
+			objects.RemoveAt(objects.Count - 1);
+			MeshRenderer wallMesh = hitObject.GetComponent<MeshRenderer>();
+			Color newColor = wallMesh.material.color;
+			wallMesh.material.color = new Color(newColor.r, newColor.g, newColor.b, 1f);
 		}
-
-
-		//if (Physics.Raycast(ray, out hit, maxRayDistance) && hit.collider.gameObject.layer != 9)
-		//{
-		//	if (hitGameObject)
-		//	{
-		//		hitObject.GetComponent<MeshRenderer>().enabled = true;
-
-		//		hitGameObject = false;
-		//	}
-		//}
-
-
-
-		/* 
-		 * 
-		 * få bort clippingen när kameran är i vissa vinklar
-		 * få till fade på materialet för spelobjektet kameran åker in i spelobjektet
-		 * 
-		 * 
-		 */
-
-
-
 	}
-
 }
