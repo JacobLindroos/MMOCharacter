@@ -1,18 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class FadeOut : MonoBehaviour
 {
-
+	public LayerMask ignore;
 	public Camera mainCamera;
-	public float maxRayDistance = 10f;
+	public float maxRayDistance;
+	public GameObject player;
 
-	private bool raycastCollision;
-	private GameObject hitObject;
-
-	List<GameObject> objects = new List<GameObject>();
-
+	RaycastHit[] hits;
 	Vector3 CameraHalfExtends
 	{
 		get
@@ -37,33 +35,33 @@ public class FadeOut : MonoBehaviour
 		Gizmos.DrawWireCube(transform.position, CameraHalfExtends);
 	}
 
+
 	void FixedUpdate()
 	{
-		//Ray ray = new Ray(transform.position, transform.forward);
-		RaycastHit hit;
+		//getting the distance between the camera and the player to set the raycast max distance
+		maxRayDistance = Vector2.Distance(transform.position, player.transform.position);
 
-		if (Physics.BoxCast(transform.position, CameraHalfExtends, transform.forward, out hit, transform.rotation, maxRayDistance)
-								&& hit.collider.gameObject.layer == 9)
+
+		if (hits != null)
 		{
-			hitObject = hit.transform.gameObject;
-			raycastCollision = true;
+			//resting material on walls last hit by the raycast
+			foreach (var hit in hits)
+			{
+				MeshRenderer wallMesh = hit.transform.gameObject.GetComponent<MeshRenderer>();
+				Color newColor = wallMesh.material.color;
+				wallMesh.material.color = new Color(newColor.r, newColor.g, newColor.b, 1.0f);
+			}
 		}
 
-		if(raycastCollision)
-		{
-			print("Looking at " + hit.transform.name);
+		//gets all walls in between the camera and the player
+		hits = Physics.BoxCastAll(transform.position, CameraHalfExtends, transform.forward, transform.rotation, maxRayDistance, ignore);
 
-			objects.Add(hitObject);
-			MeshRenderer wallMesh = hitObject.GetComponent<MeshRenderer>();
+		//setting the walls to transparent when hit by the raycast 
+		foreach (var hit in hits)
+		{
+			MeshRenderer wallMesh = hit.transform.gameObject.GetComponent<MeshRenderer>();
 			Color newColor = wallMesh.material.color;
 			wallMesh.material.color = new Color(newColor.r, newColor.g, newColor.b, 0.5f);
-		}
-		if(hit.collider.gameObject.layer != 9 && hitObject != null)
-		{
-			objects.RemoveAt(objects.Count - 1);
-			MeshRenderer wallMesh = hitObject.GetComponent<MeshRenderer>();
-			Color newColor = wallMesh.material.color;
-			wallMesh.material.color = new Color(newColor.r, newColor.g, newColor.b, 1f);
 		}
 	}
 }

@@ -866,8 +866,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79fea7896685c9d4881865f8d5d11d9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ignore:
+    serializedVersion: 2
+    m_Bits: 512
   mainCamera: {fileID: 963194227}
   maxRayDistance: 10
+  player: {fileID: 427150995}
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
