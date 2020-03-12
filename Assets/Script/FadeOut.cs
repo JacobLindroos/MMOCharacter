@@ -5,12 +5,13 @@ using System.Linq;
 
 public class FadeOut : MonoBehaviour
 {
-	public LayerMask ignore;
+	public LayerMask objectsToHit;
 	public Camera mainCamera;
-	public float maxRayDistance;
 	public GameObject player;
 
-	RaycastHit[] hits;
+	private float maxRayDistance;
+	private RaycastHit[] hits;
+
 	Vector3 CameraHalfExtends
 	{
 		get
@@ -41,7 +42,6 @@ public class FadeOut : MonoBehaviour
 		//getting the distance between the camera and the player to set the raycast max distance
 		maxRayDistance = Vector2.Distance(transform.position, player.transform.position);
 
-
 		if (hits != null)
 		{
 			//resting material on walls last hit by the raycast
@@ -54,7 +54,7 @@ public class FadeOut : MonoBehaviour
 		}
 
 		//gets all walls in between the camera and the player
-		hits = Physics.BoxCastAll(transform.position, CameraHalfExtends, transform.forward, transform.rotation, maxRayDistance, ignore);
+		hits = Physics.BoxCastAll(transform.position, CameraHalfExtends, transform.forward, transform.rotation, maxRayDistance, objectsToHit);
 
 		//setting the walls to transparent when hit by the raycast 
 		foreach (var hit in hits)

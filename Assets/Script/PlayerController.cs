@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Movement settings")]
     public float walkSpeed = 2f;
     public float runSpeed = 6f;
     public float turnSmoothTime = 0.2f;
@@ -28,7 +29,9 @@ public class PlayerController : MonoBehaviour
 
         if (inputDir != Vector2.zero)
         {
+            //calculating the target rotation of player
             float targetRotation = Mathf.Atan2(inputDir.x, inputDir.y) * Mathf.Rad2Deg + cameraT.eulerAngles.y;
+
             //making the turning of the player more smoothly
             transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref turnSmoothVelocity, turnSmoothTime);
 		}
