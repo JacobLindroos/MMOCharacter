@@ -20,7 +20,7 @@ public class ThirdPersonCamera : MonoBehaviour
     private float yaw;
     private float pitch;
 
-    private void Start()
+	private void Start()
     {
 		CursorHandler();
     }
