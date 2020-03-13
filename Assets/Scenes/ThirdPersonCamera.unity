@@ -694,8 +694,11 @@ MonoBehaviour:
   objectsToHit:
     serializedVersion: 2
     m_Bits: 512
+  SphereCastRadius: 0.3
   mainCamera: {fileID: 963194227}
   player: {fileID: 427150995}
+  fadeInAlpha: 0.5
+  fadeOutAlpha: 1
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -709,10 +712,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCenterPoint: {fileID: 691518221}
-  lockCursor: 1
   mouseSensitivity: 1
   rotationSmoothTime: 0.12
   pitchMinMax: {x: -10, y: 50}
+  hideCursor: 1
   zoomSpeed: 2
   zoomMin: 2
   zoomMax: 10
@@ -1240,8 +1243,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2083849343}
-  - component: {fileID: 2083849344}
   - component: {fileID: 2083849345}
+  - component: {fileID: 2083849346}
   m_Layer: 8
   m_Name: CameraCollider
   m_TagString: Untagged
@@ -1263,19 +1266,6 @@ Transform:
   m_Father: {fileID: 963194228}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &2083849344
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2083849342}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2083849345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1288,6 +1278,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecde2767bb7f02e4aa34db582b07a9a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!135 &2083849346
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2083849342}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &2145817446
 PrefabInstance:
   m_ObjectHideFlags: 0

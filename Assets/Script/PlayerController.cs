@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
@@ -10,6 +8,7 @@ public class PlayerController : MonoBehaviour
     public float turnSmoothTime = 0.2f;
     public float speedSmoothTime = 0.1f;
 
+	private bool isRunning;
     private float currentSpeed;
     private float speedSmoothVelocity;
     private float turnSmoothVelocity;
@@ -21,7 +20,7 @@ public class PlayerController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         //keyboard input
         Vector2 input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
@@ -29,22 +28,44 @@ public class PlayerController : MonoBehaviour
 
         if (inputDir != Vector2.zero)
         {
-            //calculating the target rotation of player
-            float targetRotation = Mathf.Atan2(inputDir.x, inputDir.y) * Mathf.Rad2Deg + cameraT.eulerAngles.y;
-
-            //making the turning of the player more smoothly
-            transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref turnSmoothVelocity, turnSmoothTime);
+			PlayerRotation(inputDir);
 		}
 
-        bool running = Input.GetKey(KeyCode.LeftShift);
+        isRunning = Input.GetKey(KeyCode.LeftShift);
 
-        //if we are running, run speed is true otherwise walk speed. If theres no input the speed is zero, standing still
-        float targetSpeed = ((running) ? runSpeed : walkSpeed) * inputDir.magnitude;
-
-        //making the speed of player more smoothly
-        currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, speedSmoothTime);
-
-        //setting the move direction
-        transform.Translate(transform.forward * currentSpeed * Time.deltaTime, Space.World);
+		PlayerMovement(isRunning, inputDir);
     }
+
+
+	/// <summary>
+	/// Sets rotation of player
+	/// </summary>
+	/// <param name="inputDir"> takes in the input direction from keyboard </param>
+	private void PlayerRotation(Vector2 inputDir)
+	{
+		//calculating the target rotation of player
+		float targetRotation = Mathf.Atan2(inputDir.x, inputDir.y) * Mathf.Rad2Deg + cameraT.eulerAngles.y;
+
+		//setting the rotation of player, making the turning of the player more smoothly
+		transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref turnSmoothVelocity, turnSmoothTime);
+	}
+
+
+	/// <summary>
+	/// Sets player movement
+	/// </summary>
+	/// <param name="isRunning"> true or false </param>
+	/// <param name="inputDir"> takes in the input direction from keyboard </param>
+	private void PlayerMovement(bool isRunning, Vector2 inputDir)
+	{
+		//if we are running, run speed is true otherwise walk speed. If theres no input the speed is zero, standing still
+		float targetSpeed = ((isRunning) ? runSpeed : walkSpeed) * inputDir.magnitude;
+
+		//making the speed of player more smoothly
+		currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, speedSmoothTime);
+
+		//setting the move direction
+		transform.Translate(transform.forward * currentSpeed * Time.deltaTime, Space.World);
+	}
 }
+

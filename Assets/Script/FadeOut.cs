@@ -1,67 +1,74 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System.Linq;
+﻿using UnityEngine;
 
 public class FadeOut : MonoBehaviour
 {
+	[Header("Raycast settings")]
 	public LayerMask objectsToHit;
+	public float SphereCastRadius = 0.5f;
 	public Camera mainCamera;
 	public GameObject player;
 
+	[Header("Fade settings")]
+	public float fadeInAlpha = 0.5f;
+	public float fadeOutAlpha = 1f;
+
 	private float maxRayDistance;
 	private RaycastHit[] hits;
-
-	Vector3 CameraHalfExtends
-	{
-		get
-		{
-			Vector3 halfExtends;
-			halfExtends.y = mainCamera.nearClipPlane * Mathf.Tan(0.5f * Mathf.Deg2Rad * mainCamera.fieldOfView);
-			halfExtends.x = halfExtends.y * mainCamera.aspect;
-			halfExtends.z = 0.0f;
-			return halfExtends;
-		}
-	}
+	private Vector3 currentCameraPosition;
+	private Vector3 raycastDirection;
 
 	private void Start()
 	{
 		mainCamera = GetComponent<Camera>();
 	}
 
-	private void OnDrawGizmos()
-	{
-		Gizmos.color = Color.red;
-		Gizmos.DrawRay(transform.position, transform.forward * maxRayDistance);
-		Gizmos.DrawWireCube(transform.position, CameraHalfExtends);
-	}
-
-
 	void FixedUpdate()
 	{
-		//getting the distance between the camera and the player to set the raycast max distance
+		//gets the distance between the camera and the player to set the raycast max distance
 		maxRayDistance = Vector2.Distance(transform.position, player.transform.position);
+		//gets camera current position
+		currentCameraPosition = transform.position;
+		//gets camera forward direction
+		raycastDirection = transform.forward;
 
+		//to avoid null ref from start, only want to change back the materials alpha after the ray have actually hit something
 		if (hits != null)
 		{
 			//resting material on walls last hit by the raycast
-			foreach (var hit in hits)
-			{
-				MeshRenderer wallMesh = hit.transform.gameObject.GetComponent<MeshRenderer>();
-				Color newColor = wallMesh.material.color;
-				wallMesh.material.color = new Color(newColor.r, newColor.g, newColor.b, 1.0f);
-			}
+			ChangeAlphaOfMaterial(fadeOutAlpha);
 		}
 
-		//gets all walls in between the camera and the player
-		hits = Physics.BoxCastAll(transform.position, CameraHalfExtends, transform.forward, transform.rotation, maxRayDistance, objectsToHit);
+		//hits all walls in between the camera and the player
+		hits = Physics.SphereCastAll(currentCameraPosition, SphereCastRadius, raycastDirection, maxRayDistance, objectsToHit);
 
 		//setting the walls to transparent when hit by the raycast 
+		ChangeAlphaOfMaterial(fadeInAlpha);
+	}
+
+
+	/// <summary>
+	/// Changes the alpha of specific material
+	/// </summary>
+	/// <param name="alpha"> of material that is hit by raycast </param>
+	private void ChangeAlphaOfMaterial(float alpha)
+	{
+		//resting material on walls last hit by the raycast
 		foreach (var hit in hits)
 		{
 			MeshRenderer wallMesh = hit.transform.gameObject.GetComponent<MeshRenderer>();
 			Color newColor = wallMesh.material.color;
-			wallMesh.material.color = new Color(newColor.r, newColor.g, newColor.b, 0.5f);
+			wallMesh.material.color = new Color(newColor.r, newColor.g, newColor.b, alpha);
 		}
+	}
+
+
+	/// <summary>
+	/// Drawing out a visual sphere and line for raycast
+	/// </summary>
+	private void OnDrawGizmos()
+	{
+		Gizmos.color = Color.red;
+		Gizmos.DrawRay(transform.position, transform.forward * maxRayDistance);
+		Gizmos.DrawWireSphere(transform.position, .5f);
 	}
 }

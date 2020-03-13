@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ThirdPersonCamera : MonoBehaviour
 {
@@ -9,7 +7,7 @@ public class ThirdPersonCamera : MonoBehaviour
     public float mouseSensitivity = 10f;
 	public float rotationSmoothTime = .12f;
 	public Vector2 pitchMinMax = new Vector2(-40f, 85f);
-	public bool lockCursor;
+	public bool hideCursor;
 
 	[Header("Zoom settings")]
 	public float zoomSpeed = 2f;
@@ -24,12 +22,7 @@ public class ThirdPersonCamera : MonoBehaviour
 
     private void Start()
     {
-		//Hides the cursor in play mode
-        if (lockCursor)
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
+		CursorHandler();
     }
 
     // Update is called once per frame
@@ -40,6 +33,11 @@ public class ThirdPersonCamera : MonoBehaviour
 		CameraMovement();
     }
 
+
+	/// <summary>
+	/// Handles the zoom in/out function
+	/// </summary>
+	/// <returns> the current zoom value </returns>
 	float ZoomHandler()
 	{
 		//adds or subtracts to the zoom value when mouse scroll wheel is used, times a speed value
@@ -57,7 +55,11 @@ public class ThirdPersonCamera : MonoBehaviour
 		return zoomOffset;
     }
 
-    void CameraMovement()
+
+	/// <summary>
+	/// Handles the cameras movement
+	/// </summary>
+    private void CameraMovement()
     {
 		//updating the yaw and pitch depending upon the mouse input
 		yaw += Input.GetAxis("Mouse X") * mouseSensitivity;
@@ -75,5 +77,19 @@ public class ThirdPersonCamera : MonoBehaviour
 
 		//setting the position of the camera
 		transform.position = playerCenterPoint.position - transform.forward * zoomOffset;
+	}
+
+
+	/// <summary>
+	/// Hides or shows the cursor in game
+	/// </summary>
+	private void CursorHandler()
+	{
+		//Hides the cursor in play mode
+		if (hideCursor)
+		{
+			Cursor.lockState = CursorLockMode.Locked;
+			Cursor.visible = false;
+		}
 	}
 }
